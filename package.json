@@ -1,0 +1,30 @@
+{
+
+  "name": "discord-registration-bot",
+
+  "version": "1.0.0",
+
+  "description": "A Discord bot for user registration with gender options",
+
+  "main": "index.js",
+
+  "scripts": {
+
+    "start": "node index.js"
+
+  },
+
+  "dependencies": {
+
+    "@discordjs/rest": "^2.3.0",
+
+    "@discordjs/voice": "^0.17.0",
+
+    "discord.js": "^14.0.0",
+
+    "dotenv": "^16.0.0"
+
+  }
+
+}
+

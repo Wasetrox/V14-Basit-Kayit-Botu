@@ -1,0 +1,16 @@
+{
+  "token": "",
+  "guildId": "",
+  "logChannelId": "",
+  "welcomeChannelId": "",
+  "registerChannelId": "",
+  "unregisteredRoleId": "",
+  "registeredRoleId": "",
+  "maleRoleId": "",
+  "femaleRoleId": "",
+  "kayitliRolId": "",
+  "tag": "",
+  "autoTag": true,
+  "unregisteredName": "",
+  "voiceChannelId": ""
+}

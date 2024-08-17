@@ -24,20 +24,13 @@ Discord Registration Bot, sunucunuza yeni katılan üyeleri kaydetmek, güvenili
 
 ### Adımlar
 
-1. **Depoyu Klonlayın:**
-
-    ```bash
-    git clone https://github.com/username/discord-registration-bot.git
-    cd discord-registration-bot
-    ```
-
-2. **Bağımlılıkları Kurun:**
+1. **Bağımlılıkları Kurun:**
 
     ```bash
     npm install
     ```
 
-3. **Config Dosyasını Ayarlayın:**
+2. **Config Dosyasını Ayarlayın:**
 
     `config.json` dosyasını kendi sunucunuza ve botunuza uygun şekilde düzenleyin:
 
@@ -60,15 +53,11 @@ Discord Registration Bot, sunucunuza yeni katılan üyeleri kaydetmek, güvenili
     }
     ```
 
-4. **Botu Başlatın:**
+3. **Botu Başlatın:**
 
     ```bash
     npm start
     ```
-
-5. **Komutları Yükleyin:**
-
-    Botun ilk başlatılmasında, komutları Discord sunucunuza kaydettirin. Bu işlem otomatik olarak `ready` olayında gerçekleşecektir.
 
 ## Kullanım
 

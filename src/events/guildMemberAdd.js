@@ -37,7 +37,7 @@ module.exports = {
       .setTimestamp();
 
     // Hoş geldin mesajı ve embed'i gönderme
-    registerChannel.send({ content: `Hoş geldin <@${member.id}>! Lütfen kaydını tamamlamak için aşağıdaki bilgilere göz at.` });
+    registerChannel.send({ content: `Hoş geldin <@${member.id}>! Lütfen kaydını tamamlamak için aşağıdaki bilgilere göz at. || <@&${config.sregisteredRoleId}> ||` });
     registerChannel.send({ embeds: [embed] });
   }
 };

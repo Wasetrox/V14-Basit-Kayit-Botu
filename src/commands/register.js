@@ -1,4 +1,4 @@
-const { SlashCommandBuilder } = require('discord.js');
+const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
 const config = require('../../config.json');
 
 module.exports = {
@@ -19,29 +19,59 @@ module.exports = {
         .setRequired(false)),
   
   async execute(interaction) {
-    const member = interaction.options.getUser('kullanici');
-    let username = interaction.options.getString('isim');
-    const age = interaction.options.getString('yas');
+    try {
+      // Kullanıcı bilgilerini al
+      const member = interaction.options.getUser('kullanici');
+      let username = interaction.options.getString('isim');
+      const age = interaction.options.getString('yas');
+      
+      // Yaş ekleme
+      if (age) {
+        username += ` | ${age}`;
+      }
 
-    if (age) {
-      username += ` | ${age}`;
-    }
+      // Otomatik tag ekleme
+      if (config.autoTag) {
+        username = `${config.tag} ${username}`;
+      }
 
-    // Otomatik tag ekleme
-    if (config.autoTag) {
-      username = `${config.tag} ${username}`;
-    }
+      // Kullanıcıyı guild'den çek
+      const guildMember = await interaction.guild.members.fetch(member.id);
 
-    const guildMember = await interaction.guild.members.fetch(member.id);
-    await guildMember.setNickname(username);
-    await guildMember.roles.remove(config.unregisteredRoleId);
-    await guildMember.roles.add(config.kayitliRolId);
+      // Kullanıcının ismini ve rollerini ayarla
+      await guildMember.setNickname(username);
+      await guildMember.roles.remove(config.unregisteredRoleId);
+      await guildMember.roles.add(config.kayitliRolId);
 
-    await interaction.reply(`${member} başarıyla kaydedildi!`);
-    
-    const logChannel = interaction.guild.channels.cache.get(config.logChannelId);
-    if (logChannel) {
-      logChannel.send(`${interaction.user.tag} kullanıcısı ${member.tag}'yi kaydetti.`);
+      // Komutu kullanan kişiye geri bildirim
+      await interaction.reply(`${member} başarıyla kaydedildi!`);
+
+      // Embed mesajı oluştur
+      const embed = new EmbedBuilder()
+        .setTitle('Kullanıcı Kaydedildi')
+        .setColor('GREEN')
+        .setThumbnail(member.displayAvatarURL({ dynamic: true }))
+        .addFields(
+          { name: 'Kayıt Eden', value: interaction.user.tag, inline: true },
+          { name: 'Kayıt Olan', value: member.tag, inline: true },
+          { name: 'Kayıt İsmi', value: username, inline: true }
+        )
+        .setTimestamp()
+        .setFooter({ text: interaction.guild.name, iconURL: interaction.guild.iconURL({ dynamic: true }) });
+
+      // Log kanalına embed mesaj gönder
+      const logChannel = interaction.guild.channels.cache.get(config.logChannelId);
+      if (logChannel && logChannel.isTextBased()) {
+        await logChannel.send({ embeds: [embed] });
+      } else {
+        console.error('Log kanalı bulunamadı veya mesaj gönderilemez.');
+      }
+    } catch (error) {
+      console.error('Kayıt komutunda bir hata oluştu:', error);
+      await interaction.reply({
+        content: 'Bir hata oluştu. Lütfen tekrar deneyin veya yöneticinize başvurun.',
+        ephemeral: true
+      });
     }
   },
 };

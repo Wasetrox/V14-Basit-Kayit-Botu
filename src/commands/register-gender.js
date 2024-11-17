@@ -1,4 +1,4 @@
-const { SlashCommandBuilder } = require('discord.js');
+const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
 const config = require('../../config.json');
 
 module.exports = {
@@ -42,34 +42,47 @@ module.exports = {
     }
 
     const guildMember = await interaction.guild.members.fetch(member.id);
-    const unregisterRole = await interaction.guild.roles.fetch(config.unregisteredRoleId)
+    const unregisterRole = await interaction.guild.roles.fetch(config.unregisteredRoleId);
 
     // Cinsiyete göre rol belirleme
     let roleId;
-    console.log(gender)
     if (gender == 'erkek') {
       roleId = config.maleRoleId;
     } else if (gender == 'kiz') {
       roleId = config.femaleRoleId;
     }
     const genderRole = await interaction.guild.roles.fetch(roleId);
-    const kayitli = await interaction.guild.roles.fetch(config.kayitliRolId)
+    const kayitli = await interaction.guild.roles.fetch(config.kayitliRolId);
 
     // Kullanıcının ismini ve rolünü ayarlama
     await guildMember.setNickname(username);
-    if(unregisterRole){
+    if (unregisterRole) {
       await guildMember.roles.remove(unregisterRole);
     }
     await guildMember.roles.add(kayitli);
-    if(genderRole){
+    if (genderRole) {
       await guildMember.roles.add(genderRole);
     }
 
     await interaction.reply(`${member} başarıyla ${gender} olarak kaydedildi!`);
-    
-    const logChannel = interaction.guild.channels.cache.get(config.logKanalId);
+
+    // Log kanalına embed mesaj gönderme
+    const logChannel = interaction.guild.channels.cache.get(config.logChannelId);
     if (logChannel) {
-      logChannel.send(`${interaction.user.tag} kullanıcısı ${member.tag}'yi ${gender} olarak kaydetti.`);
+      const embed = new EmbedBuilder()
+        .setColor(gender === 'erkek' ? '#3498db' : '#e91e63') // Erkek için mavi, kız için pembe renk
+        .setTitle('Kayıt İşlemi')
+        .addFields(
+          { name: 'Kayıt Eden', value: interaction.user.tag, inline: true },
+          { name: 'Kayıt Olan', value: `${member.tag} (${member.id})`, inline: true },
+          { name: 'Cinsiyet', value: gender.charAt(0).toUpperCase() + gender.slice(1), inline: true }
+        )
+        .setFooter({ text: `Kayıt Tarihi: ${new Date().toLocaleString('tr-TR')}` })
+        .setTimestamp();
+
+      await logChannel.send({ embeds: [embed] });
+    } else {
+      console.error('Log kanalı bulunamadı. Lütfen config.logKanalId değerini kontrol edin.');
     }
   },
 };

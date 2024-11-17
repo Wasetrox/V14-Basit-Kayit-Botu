@@ -5,19 +5,32 @@ module.exports = {
   name: 'guildMemberAdd',
 
   async execute(member) {
-    // Kullanıcının ismini config'de tanımlanan kayıtsız isim olarak ayarlama
-    await member.setNickname(config.unregisteredName);
-
-    // Otomatik tag ekleme
+    // Kullanıcı için yeni takma ad formatını oluştur
+    let nickname = config.unregisteredName; // Örnek: "Kayıtsız"
     if (config.autoTag) {
-      newUsername = `${config.tag} ${newUsername}`;
+      nickname = `${config.tag} ${config.unregisteredName}`; // Örnek: "[TAG] Kayıtsız"
+    }
+
+    // Kullanıcının adını yeni isimle ayarla
+    try {
+      await member.setNickname(nickname);
+    } catch (error) {
+      console.error(`Takma ad ayarlanırken hata oluştu: ${error}`);
     }
 
     // Kayıtsız rolünü verme
-    await member.roles.add(config.unregisteredRoleId);
+    try {
+      await member.roles.add(config.unregisteredRoleId);
+    } catch (error) {
+      console.error(`Rol eklenirken hata oluştu: ${error}`);
+    }
 
     // Kayıt kanalını bulma
     const registerChannel = member.guild.channels.cache.get(config.registerChannelId);
+    if (!registerChannel) {
+      console.error("Kayıt kanalı bulunamadı.");
+      return;
+    }
 
     // Hesap güvenliği kontrolü (Hesap 1 aydan eski mi?)
     const isTrusted = (Date.now() - member.user.createdAt) >= (30 * 24 * 60 * 60 * 1000);
@@ -25,7 +38,7 @@ module.exports = {
 
     // Embed oluşturma
     const embed = new EmbedBuilder()
-      .setColor(isTrusted ? 0x00FF00 : 0xFF0000)  // Yeşil renk güvenliyse, kırmızı renk güvenli değilse
+      .setColor(isTrusted ? 0x00FF00 : 0xFF0000) // Yeşil renk güvenliyse, kırmızı renk güvenli değilse
       .setTitle('Yeni Üye Katıldı!')
       .setThumbnail(member.user.displayAvatarURL())
       .addFields(
@@ -37,7 +50,13 @@ module.exports = {
       .setTimestamp();
 
     // Hoş geldin mesajı ve embed'i gönderme
-    registerChannel.send({ content: `Hoş geldin <@${member.id}>! Lütfen kaydını tamamlamak için aşağıdaki bilgilere göz at. || <@&${config.sregisteredRoleId}> ||` });
-    registerChannel.send({ embeds: [embed] });
-  }
+    try {
+      await registerChannel.send({
+        content: `Hoş geldin <@${member.id}>! Lütfen kaydını tamamlamak için aşağıdaki bilgilere göz at. || <@&${config.registeredRoleId}> ||`,
+      });
+      await registerChannel.send({ embeds: [embed] });
+    } catch (error) {
+      console.error(`Mesaj gönderilirken hata oluştu: ${error}`);
+    }
+  },
 };

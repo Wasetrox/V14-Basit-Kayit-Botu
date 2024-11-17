@@ -81,4 +81,4 @@ Eğer bu botu geliştirmek veya hata raporu yapmak isterseniz, lütfen bir `issu
 Bu proje [MIT Lisansı](LICENSE) ile lisanslanmıştır.
 
 ## İletişim
-[Discord Sunucumuz](https://discord.gg/gGX6WBUZzM)
+[Discord Sunucumuz](https://discord.gg/novadev)
